@@ -10,6 +10,7 @@ const MallangCreator = (() => {
     face: 'smile',
     accessory: 'none',
     rarity: 'Epic',
+    material: 'normal',
     custom: true
   };
 
@@ -33,6 +34,7 @@ const MallangCreator = (() => {
       face: 'smile',
       accessory: 'none',
       rarity: 'Epic',
+      material: 'normal',
       custom: true
     };
 
@@ -53,6 +55,7 @@ const MallangCreator = (() => {
     setSelectedButton('shape', config.shape);
     setSelectedButton('face', config.face);
     setSelectedButton('accessory', config.accessory);
+    setSelectedButton('material', config.material);
 
     updatePreview();
     setupListeners();
@@ -111,6 +114,17 @@ const MallangCreator = (() => {
     // Accessory Buttons
     setupGroupListeners('accessory', (val) => {
       config.accessory = val;
+      updatePreview();
+    });
+
+    // Material Buttons
+    setupGroupListeners('material', (val) => {
+      config.material = val;
+      if (val === 'wackpu') {
+        config.crackStage = 0;
+      } else {
+        delete config.crackStage;
+      }
       updatePreview();
     });
 
