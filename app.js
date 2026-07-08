@@ -81,18 +81,77 @@ const App = (() => {
       material: 'wackpu',
       crackStage: 0,
       custom: false
+    },
+    {
+      id: 'default-7',
+      name: '보라 니도 🟣',
+      shape: 'needoh_cube',
+      color: '#a855f7',
+      color2: '#e9d5ff',
+      gradient: false,
+      face: 'smile',
+      accessory: 'none',
+      rarity: 'Legendary',
+      material: 'needoh',
+      custom: false
+    },
+    {
+      id: 'default-8',
+      name: '핑크 니도 🩷',
+      shape: 'needoh_cube',
+      color: '#ec4899',
+      color2: '#fbcfe8',
+      gradient: false,
+      face: 'blush',
+      accessory: 'none',
+      rarity: 'Epic',
+      material: 'needoh',
+      custom: false
+    },
+    {
+      id: 'default-9',
+      name: '민트 니도 🟢',
+      shape: 'needoh_cube',
+      color: '#10b981',
+      color2: '#d1fae5',
+      gradient: false,
+      face: 'wink',
+      accessory: 'none',
+      rarity: 'Rare',
+      material: 'needoh',
+      custom: false
+    },
+    {
+      id: 'default-10',
+      name: '버터 블록 🧈',
+      shape: 'butter_block',
+      color: '#fde047',
+      color2: '#fef9c3',
+      gradient: false,
+      face: 'smile',
+      accessory: 'none',
+      rarity: 'Common',
+      material: 'normal',
+      custom: false
     }
   ];
 
   function getOwnedMallangs() {
     const data = localStorage.getItem('eunii-mallang-collection');
     if (!data) {
-      // Set default
       saveOwnedMallangs(DEFAULT_MALLANGS);
       return DEFAULT_MALLANGS;
     }
     try {
-      return JSON.parse(data);
+      const saved = JSON.parse(data);
+      const savedIds = new Set(saved.map(m => m.id));
+      // Merge any new default items not yet in saved collection
+      const merged = [...saved];
+      DEFAULT_MALLANGS.forEach(def => {
+        if (!savedIds.has(def.id)) merged.push(def);
+      });
+      if (merged.length !== saved.length) saveOwnedMallangs(merged);
+      return merged;
     } catch (e) {
       return DEFAULT_MALLANGS;
     }
