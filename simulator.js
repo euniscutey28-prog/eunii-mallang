@@ -161,18 +161,16 @@ const MallangSimulator = (() => {
         }
 
         if (activeSquishy.crackStage === 3) {
-          Sound.playPop(); // Shell fully shatters!
+          Sound.playPop();
         } else {
-          Sound.playWaxCrack(); // Crunchy sound
+          Sound.playWaxCrack();
         }
-        
-        // Create wax cracking particle burst
         triggerWaxCrackParticles(clientX, clientY);
       } else {
-        Sound.playSqueeze();
+        Sound.playForMallang(activeSquishy);
       }
     } else {
-      Sound.playSqueeze();
+      Sound.playForMallang(activeSquishy);
     }
 
     // Squeeze animation (squash in Y, stretch in X)
