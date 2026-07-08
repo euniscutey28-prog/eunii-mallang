@@ -223,8 +223,8 @@ const MallangRenderer = (() => {
 
       // Render wax shell over the body and face
       waxShellHTML = `
-        <!-- Solid Wax Coating Shell -->
-        <g fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2" class="wax-shell-coating">
+        <!-- Frosted Wax Coating Shell -->
+        <g fill="#ffffff" opacity="0.88" stroke="#cbd5e1" stroke-width="2" class="wax-shell-coating">
           ${bodyPath}
         </g>
         <!-- Glossy Highlights on Wax -->
