@@ -130,24 +130,41 @@ const Sound = (() => {
     if (!audioCtx) return;
 
     const now = audioCtx.currentTime;
-    // Synthesize a fast multi-layered crackle
+    const sampleRate = audioCtx.sampleRate;
+    
+    // Create a 50ms white noise buffer
+    const duration = 0.05;
+    const bufferSize = sampleRate * duration;
+    const buffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    // Trigger 4 rapid, slightly delayed high-frequency noise snaps
     for (let i = 0; i < 4; i++) {
-      const time = now + i * 0.015;
-      const osc = audioCtx.createOscillator();
+      const time = now + i * 0.012;
+      
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+
+      // High-pass filter to remove low frequencies, making it sound dry & crunchy
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.setValueAtTime(3200 + Math.random() * 1500, time);
+      filter.Q.setValueAtTime(1.5, time);
+
+      // Sharp decay envelope
       const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.35, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + duration - 0.015);
 
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(2000 + Math.random() * 1500, time);
-      osc.frequency.linearRampToValueAtTime(300, time + 0.025);
-
-      gain.gain.setValueAtTime(0.25, time);
-      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.025);
-
-      osc.connect(gain);
+      source.connect(filter);
+      filter.connect(gain);
       gain.connect(audioCtx.destination);
 
-      osc.start(time);
-      osc.stop(time + 0.025);
+      source.start(time);
+      source.stop(time + duration);
     }
   }
 
