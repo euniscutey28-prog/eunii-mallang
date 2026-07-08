@@ -180,7 +180,7 @@ const MallangRenderer = (() => {
     const facePath = EXPRESSIONS[expr] || EXPRESSIONS.smile;
     const accPath = ACCESSORIES[squishy.accessory] || ACCESSORIES.none;
 
-    const gradId = `mallang-grad-${squishy.id || 'default'}`;
+    const gradId = `mallang-grad-${squishy.id || 'default'}-${Math.floor(Date.now() / 100)}`;
     const fillStyle = squishy.gradient
       ? `url(#${gradId})`
       : (squishy.color || '#ffc0cb');
