@@ -1160,3 +1160,22 @@ body {
   pointer-events: none;
   z-index: 1001;
 }
+
+/* Wax Shell Cracking & Re-waxing styling */
+.wax-shell-coating {
+  transition: opacity 0.4s ease;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.wax-cracks path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawCrack 0.3s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes drawCrack {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
