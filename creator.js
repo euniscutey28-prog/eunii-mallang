@@ -11,6 +11,7 @@ const MallangCreator = (() => {
     accessory: 'none',
     rarity: 'Epic',
     material: 'normal',
+    sound: 'normal',
     custom: true
   };
 
@@ -35,6 +36,7 @@ const MallangCreator = (() => {
       accessory: 'none',
       rarity: 'Epic',
       material: 'normal',
+      sound: 'normal',
       custom: true
     };
 
@@ -56,6 +58,7 @@ const MallangCreator = (() => {
     setSelectedButton('face', config.face);
     setSelectedButton('accessory', config.accessory);
     setSelectedButton('material', config.material);
+    setSelectedButton('sound', config.sound);
 
     updatePreview();
     setupListeners();
@@ -120,12 +123,23 @@ const MallangCreator = (() => {
     // Material Buttons
     setupGroupListeners('material', (val) => {
       config.material = val;
-      if (val === 'wackpu') {
-        config.crackStage = 0;
-      } else {
-        delete config.crackStage;
-      }
+      if (val === 'wackpu') config.crackStage = 0;
+      else delete config.crackStage;
       updatePreview();
+    });
+
+    // Sound Buttons - 소리 미리보기 포함
+    setupGroupListeners('sound', (val) => {
+      config.sound = val;
+      // 선택한 소리 미리 재생
+      switch(val) {
+        case 'slime':  Sound.playSlime();  break;
+        case 'butter': Sound.playButter(); break;
+        case 'pop':    Sound.playPop();    break;
+        case 'water':  Sound.playWater();  break;
+        case 'asmr':   Sound.playASMR();   break;
+        default:       Sound.playSqueeze(); break;
+      }
     });
 
     // Create Button
