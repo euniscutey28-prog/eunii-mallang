@@ -125,13 +125,19 @@ const MallangTrading = (() => {
 
   function updateAIState(userVal, aiVal) {
     const bubbleText = document.getElementById('ai-bubble-text');
-    const aiImg = document.getElementById('ai-character-face');
+    const aiOverlay = document.getElementById('ai-character-face');
+    const aiTraderImg = document.getElementById('ai-trader-img');
+
+    function setAIState(state) {
+      if (aiOverlay) aiOverlay.className = `ai-state-overlay`;
+      if (aiTraderImg) aiTraderImg.className = `ai-trader-img state-${state}`;
+    }
 
     if (userVal === 0) {
       aiState = 'idle';
       aiAccepted = false;
-      if (bubbleText) bubbleText.innerText = '안녕! 네 말랑이를 거래판에 올려줘!';
-      if (aiImg) aiImg.className = 'ai-face state-idle';
+      if (bubbleText) bubbleText.innerText = '안녕! 네 말랑이를 거래판에 올려줘! ✌️';
+      setAIState('idle');
       return;
     }
 
@@ -139,18 +145,18 @@ const MallangTrading = (() => {
     if (userVal >= aiVal * 0.9) {
       aiState = 'happy';
       aiAccepted = true;
-      if (bubbleText) bubbleText.innerText = '우와, 좋은 거래인데? 수락할게! ✔️';
-      if (aiImg) aiImg.className = 'ai-face state-happy';
+      if (bubbleText) bubbleText.innerText = '오, 좋은 거래인데?! 수락할게! ✔️ 역시 센스 있어~';
+      setAIState('happy');
     } else if (userVal >= aiVal * 0.6) {
       aiState = 'nervous';
       aiAccepted = false;
-      if (bubbleText) bubbleText.innerText = '음... 조금 모자란 것 같아. 더 올려줘!';
-      if (aiImg) aiImg.className = 'ai-face state-nervous';
+      if (bubbleText) bubbleText.innerText = '음... 조금 모자란 것 같아. 더 올려줘! 😓';
+      setAIState('nervous');
     } else {
       aiState = 'angry';
       aiAccepted = false;
-      if (bubbleText) bubbleText.innerText = '너무 손해야! 말랑이를 훨씬 더 줘야 해! 😡';
-      if (aiImg) aiImg.className = 'ai-face state-angry';
+      if (bubbleText) bubbleText.innerText = '이게 뭐야! 완전 손해잖아! 다시 가져와! 😡';
+      setAIState('angry');
     }
 
     // If AI previously accepted, force indicator
