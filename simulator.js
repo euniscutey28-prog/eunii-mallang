@@ -29,6 +29,11 @@ const MallangSimulator = (() => {
     velX = 0.0;
     velY = 0.0;
 
+    // Ensure crackStage is initialized for wackpu
+    if (activeSquishy && activeSquishy.material === 'wackpu' && activeSquishy.crackStage === undefined) {
+      activeSquishy.crackStage = 0;
+    }
+
     renderSimulatorUI();
     setupListeners();
 
@@ -47,6 +52,33 @@ const MallangSimulator = (() => {
           ${m.name} (${m.rarity})
         </option>
       `).join('');
+    }
+
+    // Add re-wax coating button for Wack-pu-ball
+    const reWaxContainer = document.getElementById('sim-rewax-container');
+    if (reWaxContainer) {
+      if (activeSquishy && activeSquishy.material === 'wackpu') {
+        reWaxContainer.style.display = 'block';
+        reWaxContainer.innerHTML = `
+          <button id="sim-rewax-btn" class="submit-btn" style="margin-top: 10px; width: 100%; padding: 10px; font-size: 0.9rem;">
+            왁스 코팅 새로 입히기 🔄
+          </button>
+        `;
+        document.getElementById('sim-rewax-btn').onclick = () => {
+          Sound.playSuccess();
+          activeSquishy.crackStage = 0;
+          
+          const owned = App.getOwnedMallangs();
+          const idx = owned.findIndex(m => m.id === activeSquishy.id);
+          if (idx !== -1) {
+            owned[idx].crackStage = 0;
+            App.saveOwnedMallangs(owned);
+          }
+          updateMallangDisplay();
+        };
+      } else {
+        reWaxContainer.style.display = 'none';
+      }
     }
 
     updateMallangDisplay('smile');
@@ -111,7 +143,37 @@ const MallangSimulator = (() => {
     currentMouseX = clientX;
     currentMouseY = clientY;
 
-    Sound.playSqueeze();
+    // Handle Wax Cracking ASMR mechanics
+    if (activeSquishy && activeSquishy.material === 'wackpu') {
+      if (activeSquishy.crackStage === undefined) {
+        activeSquishy.crackStage = 0;
+      }
+      
+      if (activeSquishy.crackStage < 3) {
+        activeSquishy.crackStage += 1;
+        
+        // Save crack stage
+        const owned = App.getOwnedMallangs();
+        const idx = owned.findIndex(m => m.id === activeSquishy.id);
+        if (idx !== -1) {
+          owned[idx].crackStage = activeSquishy.crackStage;
+          App.saveOwnedMallangs(owned);
+        }
+
+        if (activeSquishy.crackStage === 3) {
+          Sound.playPop(); // Shell fully shatters!
+        } else {
+          Sound.playWaxCrack(); // Crunchy sound
+        }
+        
+        // Create wax cracking particle burst
+        triggerWaxCrackParticles(clientX, clientY);
+      } else {
+        Sound.playSqueeze();
+      }
+    } else {
+      Sound.playSqueeze();
+    }
 
     // Squeeze animation (squash in Y, stretch in X)
     velX = 0;
@@ -123,10 +185,40 @@ const MallangSimulator = (() => {
     updateMallangDisplay('squeezed');
   }
 
+  function triggerWaxCrackParticles(x, y) {
+    // Generate little white particles simulating cracking wax pieces
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-particle';
+      p.style.left = x + (Math.random() * 40 - 20) + 'px';
+      p.style.top = y + (Math.random() * 40 - 20) + 'px';
+      p.style.backgroundColor = '#f8fafc';
+      p.style.border = '1px solid #cbd5e1';
+      p.style.width = '6px';
+      p.style.height = '6px';
+      p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(p);
+
+      const anim = p.animate([
+        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+        { transform: `translate(${(Math.random() - 0.5) * 80}px, ${(Math.random() - 0.5) * 80 + 30}px) scale(0)`, opacity: 0 }
+      ], {
+        duration: Math.random() * 400 + 300,
+        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+      });
+      anim.onfinish = () => p.remove();
+    }
+  }
+
   function moveInteraction(clientX, clientY) {
     if (!isInteracting || !isDragging) return;
     currentMouseX = clientX;
     currentMouseY = clientY;
+
+    // Wax balls can't be stretched if they are not yet broken!
+    if (activeSquishy && activeSquishy.material === 'wackpu' && activeSquishy.crackStage < 3) {
+      return;
+    }
 
     const dx = currentMouseX - dragStartX;
     const dy = currentMouseY - dragStartY;
@@ -134,7 +226,7 @@ const MallangSimulator = (() => {
 
     if (distance > 15) {
       // Calculate angle and scale stretching based on drag distance
-      const maxStretch = 1.6;
+      const maxStretch = activeSquishy.material === 'needoh' ? 1.8 : 1.6; // NeeDoh stretches more!
       const stretchAmount = Math.min(1.0 + distance / 200.0, maxStretch);
       const compressAmount = 1.0 / Math.sqrt(stretchAmount); // Conserve volume/area!
 
@@ -154,7 +246,10 @@ const MallangSimulator = (() => {
     isInteracting = false;
     isDragging = false;
 
-    Sound.playPop();
+    // Only play release sound if wax ball was already broken or not a wax ball
+    if (!(activeSquishy && activeSquishy.material === 'wackpu' && activeSquishy.crackStage < 3)) {
+      Sound.playPop();
+    }
 
     // Bounce effect: initialize velocities for recovery
     const dx = currentMouseX - dragStartX;
@@ -179,14 +274,22 @@ const MallangSimulator = (() => {
     lastTime = timestamp;
 
     if (!isInteracting) {
+      // Custom physics parameters for materials
+      let currentK = K;
+      let currentDamping = DAMPING;
+
+      if (activeSquishy.material === 'needoh') {
+        // Slow-release elastic recovery
+        currentK = 18.0;
+        currentDamping = 12.0;
+      }
+
       // Spring physics (f = -k*x - c*v)
-      // For X scale
-      const forceX = -K * (scaleX - 1.0) - DAMPING * velX;
+      const forceX = -currentK * (scaleX - 1.0) - currentDamping * velX;
       velX += forceX * dt;
       scaleX += velX * dt;
 
-      // For Y scale
-      const forceY = -K * (scaleY - 1.0) - DAMPING * velY;
+      const forceY = -currentK * (scaleY - 1.0) - currentDamping * velY;
       velY += forceY * dt;
       scaleY += velY * dt;
 
