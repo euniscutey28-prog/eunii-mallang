@@ -45,7 +45,9 @@ const MallangRenderer = (() => {
       <path d="M 18,35 Q 12,35 12,42 L 12,70 Q 12,85 50,85 Q 88,85 88,70 L 88,42 Q 88,35 82,35 Z" class="mallang-body-shape" />
       <polygon points="21,32 29,21 31,34" fill="#ffb6c1" />
       <polygon points="79,32 71,21 69,34" fill="#ffb6c1" />
-    `
+    `,
+    needoh_cube: '__SPECIAL__',
+    butter_block: '__SPECIAL__'
   };
 
   const EXPRESSIONS = {
@@ -233,6 +235,149 @@ const MallangRenderer = (() => {
         <g class="wax-cracks">
           ${crackLines}
         </g>
+      `;
+    }
+
+    // ===== SPECIAL SHAPE: NeeDoh Jelly Cube =====
+    if (squishy.shape === 'needoh_cube') {
+      const c1 = squishy.color || '#c084fc';
+      const c2 = squishy.color2 || '#e9d5ff';
+      const uid = `nd-${squishy.id || 'x'}-${Math.floor(Date.now()/100)}`;
+      return `
+        <svg viewBox="0 0 100 100" width="${width}" height="${height}"
+             class="mallang-svg ${rarityClass}"
+             style="transform: scale(${stretchX}, ${stretchY}); transform-origin: 50% 70%;"
+             xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="nd-body-${uid}" cx="38%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#fff" stop-opacity="0.55" />
+              <stop offset="40%" stop-color="${c2}" stop-opacity="0.75" />
+              <stop offset="100%" stop-color="${c1}" stop-opacity="0.92" />
+            </radialGradient>
+            <radialGradient id="nd-inner-${uid}" cx="60%" cy="65%" r="55%">
+              <stop offset="0%" stop-color="${c1}" stop-opacity="0.3" />
+              <stop offset="100%" stop-color="${c2}" stop-opacity="0.05" />
+            </radialGradient>
+            <filter id="nd-blur-${uid}" x="-10%" y="-10%" width="120%" height="120%">
+              <feGaussianBlur stdDeviation="0.8" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+            <filter id="nd-shadow-${uid}">
+              <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="${c1}" flood-opacity="0.5" />
+            </filter>
+          </defs>
+
+          <!-- Drop shadow -->
+          <rect x="13" y="13" width="74" height="74" rx="22" ry="22"
+                fill="${c1}" opacity="0.18" filter="url(#nd-shadow-${uid})" />
+
+          <!-- Main jelly body (translucent) -->
+          <rect x="12" y="12" width="76" height="76" rx="22" ry="22"
+                fill="url(#nd-body-${uid})" stroke="${c1}" stroke-width="1.5" stroke-opacity="0.4" />
+
+          <!-- Inner color depth layer -->
+          <rect x="18" y="18" width="64" height="64" rx="17" ry="17"
+                fill="url(#nd-inner-${uid})" />
+
+          <!-- Swirl streak top-left -->
+          <path d="M 20,30 Q 35,22 45,35" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.35" />
+          <path d="M 55,20 Q 65,28 62,42" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.2" />
+
+          <!-- Embossed NEE DOH logo area -->
+          <rect x="22" y="58" width="56" height="24" rx="6" ry="6"
+                fill="none" stroke="${c1}" stroke-width="1.2" stroke-opacity="0.55" />
+          <text x="50" y="67" text-anchor="middle" dominant-baseline="middle"
+                font-family="'Arial Black', 'Impact', sans-serif"
+                font-size="7" font-weight="900" letter-spacing="1.5"
+                fill="${c1}" opacity="0.6">NEE</text>
+          <text x="50" y="76" text-anchor="middle" dominant-baseline="middle"
+                font-family="'Arial Black', 'Impact', sans-serif"
+                font-size="7" font-weight="900" letter-spacing="1.5"
+                fill="${c1}" opacity="0.6">DOH!</text>
+
+          <!-- Big glossy highlight top-left -->
+          <ellipse cx="31" cy="27" rx="12" ry="7"
+                   fill="#fff" opacity="0.45" transform="rotate(-30 31 27)" />
+          <!-- Small secondary highlight -->
+          <ellipse cx="70" cy="22" rx="6" ry="3.5"
+                   fill="#fff" opacity="0.28" transform="rotate(-20 70 22)" />
+
+          <!-- Bottom edge darker tint for volume -->
+          <rect x="12" y="72" width="76" height="16" rx="0 0 22 22"
+                fill="${c1}" opacity="0.25" />
+        </svg>
+      `;
+    }
+
+    // ===== SPECIAL SHAPE: Butter Block =====
+    if (squishy.shape === 'butter_block') {
+      const uid2 = `bt-${squishy.id || 'x'}-${Math.floor(Date.now()/100)}`;
+      return `
+        <svg viewBox="0 0 100 100" width="${width}" height="${height}"
+             class="mallang-svg ${rarityClass}"
+             style="transform: scale(${stretchX}, ${stretchY}); transform-origin: 50% 70%;"
+             xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bt-top-${uid2}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fef08a" />
+              <stop offset="100%" stop-color="#eab308" />
+            </linearGradient>
+            <linearGradient id="bt-front-${uid2}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fde047" />
+              <stop offset="100%" stop-color="#ca8a04" />
+            </linearGradient>
+            <linearGradient id="bt-side-${uid2}" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#d97706" />
+              <stop offset="100%" stop-color="#fbbf24" />
+            </linearGradient>
+            <filter id="bt-shadow-${uid2}">
+              <feDropShadow dx="3" dy="6" stdDeviation="5" flood-color="#78350f" flood-opacity="0.35" />
+            </filter>
+          </defs>
+
+          <!-- 3D isometric butter block -->
+          <!-- Shadow -->
+          <ellipse cx="52" cy="92" rx="36" ry="6" fill="#92400e" opacity="0.25" />
+
+          <!-- Side face (right) -->
+          <polygon points="72,28 88,20 88,76 72,84"
+                   fill="url(#bt-side-${uid2})" />
+
+          <!-- Front face -->
+          <rect x="12" y="28" width="60" height="56" rx="3"
+                fill="url(#bt-front-${uid2})" filter="url(#bt-shadow-${uid2})" />
+
+          <!-- Top face -->
+          <polygon points="12,28 72,28 88,20 28,20"
+                   fill="url(#bt-top-${uid2})" />
+
+          <!-- Label area on front -->
+          <rect x="14" y="38" width="56" height="34" rx="2"
+                fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" />
+
+          <!-- SALTED text -->
+          <text x="42" y="50" text-anchor="middle" dominant-baseline="middle"
+                font-family="'Arial', sans-serif" font-size="5.5" font-weight="bold"
+                fill="#1e3a8a" letter-spacing="1.5">SALTED</text>
+
+          <!-- BUTTER text -->
+          <text x="42" y="61" text-anchor="middle" dominant-baseline="middle"
+                font-family="'Arial Black', 'Impact', sans-serif" font-size="11" font-weight="900"
+                fill="#1e40af" letter-spacing="0.5">BUTTER</text>
+
+          <!-- 4oz label -->
+          <text x="22" y="72" text-anchor="middle" dominant-baseline="middle"
+                font-family="'Arial', sans-serif" font-size="6" font-weight="bold"
+                fill="#1e3a8a">4oz.</text>
+
+          <!-- Top highlight streak -->
+          <polygon points="30,21 65,21 70,23 35,23"
+                   fill="#fff" opacity="0.35" />
+
+          <!-- Front face highlight -->
+          <rect x="13" y="29" width="58" height="5" rx="2"
+                fill="#fff" opacity="0.22" />
+        </svg>
       `;
     }
 
