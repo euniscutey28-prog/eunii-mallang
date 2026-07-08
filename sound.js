@@ -124,13 +124,41 @@ const Sound = (() => {
     osc.stop(audioCtx.currentTime + 0.05);
   }
 
+  // Play a crunchy wax cracking sound (Wack-pu-ball ASMR)
+  function playWaxCrack() {
+    initAudio();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    // Synthesize a fast multi-layered crackle
+    for (let i = 0; i < 4; i++) {
+      const time = now + i * 0.015;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(2000 + Math.random() * 1500, time);
+      osc.frequency.linearRampToValueAtTime(300, time + 0.025);
+
+      gain.gain.setValueAtTime(0.25, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.025);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(time);
+      osc.stop(time + 0.025);
+    }
+  }
+
   return {
     init: initAudio,
     playSqueeze,
     playPop,
     playSuccess,
     playFail,
-    playClick
+    playClick,
+    playWaxCrack
   };
 })();
 
