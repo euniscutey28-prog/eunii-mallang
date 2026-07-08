@@ -13,6 +13,7 @@ const App = (() => {
       face: 'smile',
       accessory: 'bow',
       rarity: 'Epic',
+      material: 'normal',
       custom: false
     },
     {
@@ -25,6 +26,7 @@ const App = (() => {
       face: 'blush',
       accessory: 'none',
       rarity: 'Rare',
+      material: 'normal',
       custom: false
     },
     {
@@ -37,6 +39,7 @@ const App = (() => {
       face: 'sleepy',
       accessory: 'none',
       rarity: 'Common',
+      material: 'normal',
       custom: false
     },
     {
@@ -49,6 +52,34 @@ const App = (() => {
       face: 'wink',
       accessory: 'crown',
       rarity: 'Legendary',
+      material: 'normal',
+      custom: false
+    },
+    {
+      id: 'default-5',
+      name: '니도 슬라임볼 🔵',
+      shape: 'circle',
+      color: '#1d4ed8',
+      color2: '#38bdf8',
+      gradient: true,
+      face: 'shocked',
+      accessory: 'none',
+      rarity: 'Legendary',
+      material: 'needoh',
+      custom: false
+    },
+    {
+      id: 'default-6',
+      name: 'ASMR 왁뿌볼 🥚',
+      shape: 'circle',
+      color: '#ff007f',
+      color2: '#fecdd3',
+      gradient: true,
+      face: 'smile',
+      accessory: 'none',
+      rarity: 'Epic',
+      material: 'wackpu',
+      crackStage: 0,
       custom: false
     }
   ];
