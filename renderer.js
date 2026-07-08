@@ -198,6 +198,44 @@ const MallangRenderer = (() => {
     const glowColor = squishy.color || '#ffc0cb';
     const rarityClass = `mallang-rarity-${(squishy.rarity || 'Common').toLowerCase()}`;
 
+    // Wax shell rendering logic for Wack-pu-ball
+    let waxShellHTML = '';
+    const crackStage = options.crackStage !== undefined ? options.crackStage : (squishy.crackStage || 0);
+
+    if (squishy.material === 'wackpu' && crackStage < 3) {
+      let crackLines = '';
+      if (crackStage === 1) {
+        crackLines = `
+          <path d="M 35,45 L 45,55 L 40,70" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" fill="none" />
+          <path d="M 65,40 L 58,52 L 62,65" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" fill="none" />
+        `;
+      } else if (crackStage === 2) {
+        crackLines = `
+          <!-- Heavy cracks -->
+          <path d="M 35,45 L 45,55 L 40,70" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none" />
+          <path d="M 65,40 L 58,52 L 62,65" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none" />
+          <path d="M 45,55 L 58,52" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none" />
+          <path d="M 22,60 L 35,45" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none" />
+          <path d="M 78,60 L 65,40" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none" />
+          <path d="M 50,25 L 45,35" stroke="#475569" stroke-width="2.5" stroke-linecap="round" fill="none" />
+        `;
+      }
+
+      // Render wax shell over the body and face
+      waxShellHTML = `
+        <!-- Solid Wax Coating Shell -->
+        <g fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2" class="wax-shell-coating">
+          ${bodyPath}
+        </g>
+        <!-- Glossy Highlights on Wax -->
+        <ellipse cx="40" cy="40" rx="8" ry="4" fill="#fff" opacity="0.5" transform="rotate(-30, 40, 40)" />
+        <!-- Cracks Overlay -->
+        <g class="wax-cracks">
+          ${crackLines}
+        </g>
+      `;
+    }
+
     // Inline SVG string
     return `
       <svg viewBox="0 0 100 100" width="${width}" height="${height}" 
@@ -226,6 +264,9 @@ const MallangRenderer = (() => {
         <g class="mallang-accessory">
           ${accPath}
         </g>
+
+        <!-- Wax Shell Overlay (Hides content underneath until broken) -->
+        ${waxShellHTML}
       </svg>
     `;
   }
